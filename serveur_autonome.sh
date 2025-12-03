@@ -20,6 +20,14 @@ find $CHEMIN_HOME -maxdepth -type d -atime +$J_INACTIF > $FICHIER_TEMP
 echo ""
 echo "=== LISTE DES REPERTOIRES INACTIFS ==="
 
+NB_USERS=$(wc -1 < $FICHIER_TEMP)
+echo "J'ai trouve $NB_USERS repertoires inactifs :"
+cat $FICHIER_TEMP
+echo "---------------------------"
+
+#Demande de confirmation avant une action
+echo ""
+read -p "Voulez-vous continuer le traitement sur ces repertoires ?  (oui/non) :" REPONSE
 
 
 
