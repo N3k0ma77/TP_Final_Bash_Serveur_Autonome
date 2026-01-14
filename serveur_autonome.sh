@@ -25,9 +25,15 @@ echo "J'ai trouve $NB_USERS repertoires inactifs :"
 cat $FICHIER_TEMP
 echo "---------------------------"
 
-#Demande de confirmation avant une action
+#Demande de confirmation avant l'action
 echo ""
 read -p "Voulez-vous continuer le traitement sur ces repertoires ?  (oui/non) :" REPONSE
+
+#Suppression du fichier temp
+rm $FICHIER_TEMP
+echo "Nettoyage terminé."
+echo "--- Fin de l'analyse ---"
+exit 0
 
 
 
