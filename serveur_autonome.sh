@@ -8,6 +8,9 @@ CHEMIN_HOME="/home"
 #Liste des users dans une liste
 FICHIER_TEMP="/tmp/liste_inactifs.txt" 
 
+#Vidage du dossier s'il existe deja
+> $FICHIER_TEMP
+
 #Debut analyse
 echo "=== DEBUT DE L'ANALYSE ==="
 echo "Recherche des repertoires inactifs depuis plus de $J_INACTIF jours..."
@@ -20,7 +23,7 @@ find $CHEMIN_HOME -maxdepth -type d -atime +$J_INACTIF > $FICHIER_TEMP
 echo ""
 echo "=== LISTE DES REPERTOIRES INACTIFS ==="
 
-NB_USERS=$(wc -1 < $FICHIER_TEMP)
+$NB_USERS=$(wc -1 < $FICHIER_TEMP)
 echo "J'ai trouve $NB_USERS repertoires inactifs :"
 cat $FICHIER_TEMP
 echo "---------------------------"
@@ -32,7 +35,7 @@ read -p "Voulez-vous continuer le traitement sur ces repertoires ?  (oui/non) :"
 #Suppression du fichier temp
 rm $FICHIER_TEMP
 echo "Nettoyage terminé."
-echo "--- Fin de l'analyse ---"
+echo "=== Fin de l'analyse ==="
 exit 0
 
 
