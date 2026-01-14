@@ -16,7 +16,7 @@ echo "Le resultat est  stocké dans : $FICHIER_TEMP"
 #(https://www.ionos.fr/digitalguide/serveur/configuration/commande-find-sous-linux/ - https://www.christophelebot.fr/ressources/shell-bash-commandes-linux-utiles-efficaces/)
 find $CHEMIN_HOME -maxdepth -type d -atime +$J_INACTIF > $FICHIER_TEMP
 
-#Afficher la liste 
+#Afficher la liste
 echo ""
 echo "=== LISTE DES REPERTOIRES INACTIFS ==="
 
