@@ -22,7 +22,7 @@ SEUIL_RAM=90
 
 # Vérifier l'espace disque trouvé sur https://labex.io/
 echo "--- Espace disque sur / ---"
-df -h /
+df -h / | column -t
 echo ""
 
 # Extraire le pourcentage d'utilisation du disque
@@ -39,7 +39,7 @@ echo ""
 
 # Vérifier la mémoire RAM
 echo "--- Mémoire RAM ---"
-free -h
+free -h | column -t
 echo ""
 
 # Calculer le pourcentage de RAM utilisée trouvé sur https://unix.stackexchange.com/
@@ -59,12 +59,12 @@ echo ""
 
 # Lister les 3 processus les plus consommateurs en CPU trouvé sur https://www.cyberciti.biz/faq/linux-find-top-cpu-consumers/
 echo "--- Top 3 processus consommateurs en CPU ---"
-ps aux --sort=-%cpu | head -n 4
+ps aux --sort=-%cpu | head -n 4 | column -t
 echo ""
 
 # Lister les 3 processus les plus consommateurs en RAM trouvé sur https://www.cyberciti.biz/faq/linux-check-memory-usage/
 echo "--- Top 3 processus consommateurs en RAM ---"
-ps aux --sort=-%mem | head -n 4
+ps aux --sort=-%mem | head -n 4 | column -t
 echo ""
 
 echo "============================================"
