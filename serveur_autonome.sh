@@ -32,3 +32,7 @@ interruption_handler() {
 
 trap interruption_handler INT
 
+#3. Planification
+
+#Commande pour l'execution automatique : 30 23 * * * /opt/scripts/serveur_autonome.sh /etc
+
