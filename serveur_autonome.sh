@@ -31,9 +31,9 @@ echo "Utilisation du disque : $DISQUE%"
 
 # Vérifier le seuil disque
 if [ $DISQUE -ge $SEUIL_DISQUE ]; then
-    echo "⚠️  WARNING : Seuil disque dépassé ($DISQUE% >= $SEUIL_DISQUE%)"
+    echo "WARNING : Seuil disque dépassé ($DISQUE% >= $SEUIL_DISQUE%)"
 else
-    echo "✓ OK : Espace disque suffisant"
+    echo "OK : Espace disque suffisant"
 fi
 echo ""
 
@@ -51,7 +51,7 @@ echo "RAM utilisée : $POURCENTAGE_RAM%"
 
 # Vérifier le seuil RAM
 if [ $POURCENTAGE_RAM -ge $SEUIL_RAM ]; then
-    echo "⚠️  WARNING : Seuil RAM dépassé ($POURCENTAGE_RAM% >= $SEUIL_RAM%)"
+    echo "WARNING : Seuil RAM dépassé ($POURCENTAGE_RAM% >= $SEUIL_RAM%)"
 else
     echo "✓ OK : Mémoire RAM suffisante"
 fi
@@ -91,13 +91,13 @@ for service in "${services[@]}"; do
     if systemctl is-active --quiet "$service"; then
         echo "  ✓ $service est actif"
     else
-        echo "  ✗ $service est inactif - Tentative de redémarrage..."
+        echo "  X $service est inactif - Tentative de redémarrage..."
         
         # Tentative de redémarrage UNE SEULE FOIS trouvé sur https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
         if systemctl restart "$service" 2>/dev/null; then
             echo "  ✓ $service a été redémarré avec succès"
         else
-            echo "  ✗ ERROR : Échec du redémarrage de $service"
+            echo "  X ERROR : Échec du redémarrage de $service"
             ((erreurs++))
         fi
     fi
@@ -114,7 +114,7 @@ echo ""
 
 # Code de sortie basé sur les erreurs trouvé sur https://tldp.org/LDP/abs/html/exit-status.html
 if [ $erreurs -gt 0 ]; then
-    echo "⚠️  Attention : Des erreurs ont été détectées"
+    echo "Attention : Des erreurs ont été détectées"
     exit 1
 else
     echo "✓ Vérification terminée avec succès"
