@@ -1,6 +1,8 @@
 #!/bin/bash
 #Journalisation et robustesse (seb)
 
+#1. Fonction de journalisation standardisée
+
 LOG_DIR="/var/log/maintenance"
 LOG_FILE="$LOG_DIR/maintenance_$(date +\%Y\%m\%d_\%H\%M\%S).log"
 
@@ -16,4 +18,17 @@ log_message() {
     
     echo "$LOG_LINE"
 }
+
+#2. Gestion des interruptions utilisateur
+
+
+interruption_handler() {
+    
+    log_message "ERROR" "Script interrompu par l'utilisateur"
+    
+
+    exit 1
+}
+
+trap interruption_handler INT
 
