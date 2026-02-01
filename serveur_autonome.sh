@@ -49,139 +49,118 @@ else
     echo "OK : Mémoire RAM suffisante"
 fi
 
+#!/bin/bash
+
 # ==============================================================================
-# Script : Sauvegarde Dynamique et Intégrité
-# Description : Archive un répertoire, le compresse et vérifie son intégrité.
+# Script : Sauvegarde Dynamique et Integrite
+# Description : Archive un repertoire, le compresse et verifie son integrite.
 # Usage : ./backup.sh <source_dir> <dest_dir>
-# Auteur : Théo L. - R4 Administration des systèmes 2025-2026
+# Auteur : Theo L. - R4 Administration des systemes 2025-2026
 # ==============================================================================
 
 echo "=============================================="
-echo "===   SAUVEGARDE DYNAMIQUE ET INTÉGRITÉ   ==="
+echo "===   SAUVEGARDE DYNAMIQUE ET INTEGRITE     ==="
 echo "=============================================="
 echo ""
 
 # ==============================================================================
-# 1. GESTION DES ARGUMENTS ET VALIDATION DU CIBLE
+# Fonction : suppression des accents
+# ==============================================================================
+enlever_accents() {
+    echo "$1" | iconv -f UTF-8 -t ASCII//TRANSLIT
+}
+
+# ==============================================================================
+# 1. GESTION DES ARGUMENTS ET VALIDATION DE LA CIBLE
 # ==============================================================================
 
-echo "=== 1. Gestion des arguments et validation du cible ==="
+echo "=== 1. Gestion des arguments et validation de la cible ==="
 echo ""
 
-# Vérification du nombre d'arguments
 if [ "$#" -ne 2 ]; then
-    echo "Erreur : Le script nécessite exactement 2 arguments."
-    echo "Usage: $0 <chemin_absolu_source> <chemin_destination>"
+    echo "Erreur : Le script necessite exactement 2 arguments."
+    echo "Usage : $0 <chemin_absolu_source> <chemin_destination>"
     echo ""
-    echo "Exemple:"
-    echo "  $0 /etc /mnt/backup"
     exit 102
 fi
 
 SOURCE_DIR="$1"
 DEST_BASE="$2"
 
-echo "Arguments reçus :"
-echo "  - Répertoire source      : $SOURCE_DIR"
-echo "  - Répertoire destination : $DEST_BASE"
+echo "Arguments recus :"
+echo "  - Repertoire source      : $SOURCE_DIR"
+echo "  - Repertoire destination : $DEST_BASE"
 echo ""
 
-# Vérification : l'argument est-il présent ?
 if [ -z "$SOURCE_DIR" ]; then
     echo "Erreur : L'argument source est vide."
     exit 102
 fi
 
-# Vérification : l'argument existe-t-il ?
 if [ ! -e "$SOURCE_DIR" ]; then
     echo "Erreur : Le chemin '$SOURCE_DIR' n'existe pas."
     exit 102
 fi
 
-# Vérification : est-ce un répertoire ?
 if [ ! -d "$SOURCE_DIR" ]; then
-    echo "Erreur : '$SOURCE_DIR' n'est pas un répertoire."
+    echo "Erreur : '$SOURCE_DIR' n'est pas un repertoire."
     exit 102
 fi
 
-echo "✓ Validation réussie : '$SOURCE_DIR' est un répertoire valide."
-echo ""
-
 # ==============================================================================
-# 2. ARCHIVAGE ET COMPRESSION AVANCÉE
+# 2. ARCHIVAGE ET COMPRESSION
 # ==============================================================================
 
-echo "=== 2. Archivage et compression avancée ==="
+echo "=== 2. Archivage et compression ==="
 echo ""
 
-# Créer le répertoire de destination /mnt/sauvegardes s'il n'existe pas
 mkdir -p "$DEST_BASE"
-echo "✓ Répertoire de destination créé/vérifié : $DEST_BASE"
-echo ""
 
-# Nom dynamique de l'archive : NOM_REP_ANNEE_MOIS_JOUR_HEURE
-NOM_REP=$(basename "$SOURCE_DIR")
+NOM_REP_ORIG=$(basename "$SOURCE_DIR")
+NOM_REP=$(enlever_accents "$NOM_REP_ORIG")
+
 DATE_STR=$(date +%Y_%m_%d_%Hh%M)
 NOM_ARCHIVE="${NOM_REP}_${DATE_STR}.tar.gz"
-
 FULL_DEST_PATH="$DEST_BASE/$NOM_ARCHIVE"
 
 echo "Informations de l'archive :"
-echo "  - Nom du répertoire : $NOM_REP"
-echo "  - Date/Heure        : $DATE_STR"
-echo "  - Nom de l'archive  : $NOM_ARCHIVE"
-echo "  - Chemin complet    : $FULL_DEST_PATH"
+echo "  - Nom du repertoire source : $NOM_REP_ORIG"
+echo "  - Nom nettoye              : $NOM_REP"
+echo "  - Nom de l'archive          : $NOM_ARCHIVE"
+echo "  - Chemin complet            : $FULL_DEST_PATH"
 echo ""
 
-# Archiver le répertoire cible en utilisant la compression Gzip
-echo "Archivage en cours avec compression Gzip..."
-tar -czf "$FULL_DEST_PATH" -C "$(dirname "$SOURCE_DIR")" "$NOM_REP"
+echo "Archivage en cours..."
+tar -czf "$FULL_DEST_PATH" -C "$(dirname "$SOURCE_DIR")" "$NOM_REP_ORIG"
 
-if [ $? -eq 0 ]; then
-    echo "✓ Archivage réussi : $NOM_ARCHIVE"
-    echo "  Taille : $(du -h "$FULL_DEST_PATH" | cut -f1)"
-else
-    echo "✗ Erreur lors de l'archivage."
+if [ $? -ne 0 ]; then
+    echo "Erreur lors de l'archivage."
     exit 1
 fi
-echo ""
 
 # ==============================================================================
-# 3. VÉRIFICATION D'INTÉGRITÉ
+# 3. VERIFICATION D'INTEGRITE
 # ==============================================================================
 
-echo "=== 3. Vérification d'intégrité ==="
+echo ""
+echo "=== 3. Verification de l'integrite ==="
 echo ""
 
-# Générer le checksum en SHA256
-echo "Génération du checksum SHA256..."
-sha256sum "$FULL_DEST_PATH" > "${FULL_DEST_PATH}.sha256"
+CHECKSUM_FILE="${FULL_DEST_PATH}.sha256"
 
-if [ $? -eq 0 ]; then
-    echo "✓ Checksum SHA256 généré avec succès"
-    echo "  Fichier : ${FULL_DEST_PATH}.sha256"
-else
-    echo "✗ Erreur lors de la génération du checksum"
+sha256sum "$FULL_DEST_PATH" > "$CHECKSUM_FILE"
+
+if [ $? -ne 0 ]; then
+    echo "Erreur lors de la generation du checksum."
     exit 1
 fi
+
+echo "Checksum SHA256 genere :"
+cat "$CHECKSUM_FILE"
 echo ""
 
-# Stocker le checksum dans un fichier séparé portant le même nom que l'archive
-echo "Contenu du fichier checksum :"
-cat "${FULL_DEST_PATH}.sha256"
-echo ""
-
-# Vérification ultérieure : tester l'intégrité de l'archive
-echo "Vérification de l'intégrité de l'archive..."
-tar -tzf "$FULL_DEST_PATH" > /dev/null 2>&1
-
-if [ $? -eq 0 ]; then
-    echo "✓ Vérification réussie : L'archive est intègre."
-else
-    echo "✗ Alerte : L'archive semble corrompue."
-    exit 1
-fi
-echo ""
+echo "Sauvegarde terminee avec succes."
+exit 0
 
 # ==============================================================================
 # RÉSUMÉ FINAL
